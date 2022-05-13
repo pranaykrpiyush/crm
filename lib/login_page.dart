@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:crm_app/web_view_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:crm_app/chat_screen.dart';
@@ -27,6 +28,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void userLogin() async {
+    print("Login");
     email = emailCtrl.text;
     password = passwordCtrl.text;
     int otp;
@@ -39,14 +41,17 @@ class _LoginPageState extends State<LoginPage> {
       Uri.parse(url),
       body: map,
     );
+    print(response.statusCode);
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);
       otp = data['otp'];
       print(data['status']);
+      print(data['otp']);
 
       if (data['status'] == 200) {
         setState(() {
           loginMessage = 'OTP sent successfully';
+          displayToast();
           Get.to(()=> OTPScreen(email: email,otp:otp));
 
         //  Navigator.push(context,
@@ -58,14 +63,17 @@ class _LoginPageState extends State<LoginPage> {
       } else if (data['status'] == 201) {
         setState(() {
           loginMessage = 'Failed to send mail';
+          displayToast();
         });
       } else if (data['status'] == 401) {
         setState(() {
           loginMessage = 'Unauthorised';
+          displayToast();
         });
       } else if (data['status'] == 405) {
         setState(() {
           loginMessage = 'Method not allowed';
+          displayToast();
         });
       }
       // else if (data['status'] == 406 ) {
@@ -78,15 +86,17 @@ class _LoginPageState extends State<LoginPage> {
         print(data['status']);
         setState(() {
           loginMessage = 'Please verify your email address';
+          displayToast();
         });
       }
     } else {
       setState(() {
         loginMessage = 'Failed to connect to the server';
+        displayToast();
         print('fail');
       });
     }
-    displayToast();
+    //displayToast();
   }
 
   @override
@@ -170,7 +180,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               TextButton(
                   onPressed: () {
-                    //Get.to(() => );
+                    Get.to(() =>const SignupScreen() );
                   },
                   child: Text(
                     "Don't have an account? Create here",

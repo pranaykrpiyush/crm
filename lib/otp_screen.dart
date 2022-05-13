@@ -7,10 +7,10 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:async/async.dart';
-
+import 'package:crm_app/userdata.dart';
 
 class OTPScreen extends StatefulWidget {
-  const OTPScreen({ this.email, required this.otp}) ;
+  const OTPScreen({this.email, required this.otp});
 
   //final String? otp;
   final String? email;
@@ -25,12 +25,20 @@ class _OTPScreenState extends State<OTPScreen> {
   var message = "";
   var accessToken = "";
   var otpCtrl = TextEditingController();
+  // late String token;
   verifyOtp() async {
     var email = widget.email;
+    // var userName;
+    // var phone;
+    // var credits;
+    // var plan;
+    // var memberType;
+    // var emailId;
     //print(otpCtrl.text);
     //print(widget.otp.toString()==otpCtrl.text);
-    if(otpCtrl.text == widget.otp.toString()) {
-      var url = "https://app.crm-messaging.cloud/index.php/Api/getAccessToken?email=$email";
+    if (otpCtrl.text == widget.otp.toString()) {
+      var url =
+          "https://app.crm-messaging.cloud/index.php/Api/getAccessToken?email=$email";
       http.Response response = await http.get(
         Uri.parse(url),
         // body: map,
@@ -39,26 +47,37 @@ class _OTPScreenState extends State<OTPScreen> {
       Map<String, dynamic> data = json.decode(response.body);
       if (response.statusCode == 200) {
         accessToken = data['accessToken'];
+        var urll = "https://app.crm-messaging.cloud/index.php/Api/getProfile";
+        final response = await http.get(Uri.parse(urll), headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        });
+        print('Token : $accessToken');
+        print(response.statusCode);
+        Map<String, dynamic> result = json.decode(response.body);
+        userName = result['data']['fname'];
+        emailId = result['data']['email'];
+        credits = result['data']['credit'];
+        plan = result['data']['plan'];
+        phone = result['data']['phone'];
+        memberType = result['data']['member_type'];
 
-        Get.to(() => const ChatPage());
+
+        Get.off(() => ChatPage(accessToken: accessToken,));
         setState(() {
           message = "Login Successful";
         });
-      }
-      else if (response.statusCode == 201) {
+      } else if (response.statusCode == 201) {
         message = "Something went wrong";
-      }
-      else if (response.statusCode == 401) {
+      } else if (response.statusCode == 401) {
         message = "Unauthorised";
-      }
-      else if (response.statusCode == 405) {
+      } else if (response.statusCode == 405) {
         message = "Method not allowed";
-      }
-      else if (response.statusCode == 406) {
+      } else if (response.statusCode == 406) {
         message = "Invalid parameter";
       }
-    }
-    else{
+    } else {
       message = "Invalid OTP, please try again";
     }
     Fluttertoast.showToast(msg: message);
@@ -75,8 +94,7 @@ class _OTPScreenState extends State<OTPScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Padding(
-                padding:
-                const EdgeInsets.all(30),
+                padding: const EdgeInsets.all(30),
                 child: Image.asset('images/lo.png'),
               ),
               Container(
@@ -92,7 +110,7 @@ class _OTPScreenState extends State<OTPScreen> {
                 padding: const EdgeInsets.all(28.0),
                 child: Container(
                   color: Colors.white38,
-                 // width: MediaQuery.of(context).size.width - 25,
+                  // width: MediaQuery.of(context).size.width - 25,
                   // height: 25,
 
                   child: TextFormField(
@@ -132,7 +150,6 @@ class _OTPScreenState extends State<OTPScreen> {
                   ),
                 ),
               ),
-
             ],
           ),
         ),

@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-     home:const ProfileScreen() ,
+     home: const LoginPage() ,
     );
   }
 }

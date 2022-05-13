@@ -19,7 +19,7 @@ final makeListTile = ListTile(
       child: Icon(Icons.autorenew, color: Colors.white),
     ),
     title: const Text(
-      "Introduction to Driving",
+      "Name",
       style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
     ),
     // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
@@ -43,13 +43,8 @@ final makeBody = Container(
   ),
 );
 final topAppBar = AppBar(
-  elevation: 0.1,
+  elevation: 0.5,
   backgroundColor: const Color.fromRGBO(58, 66, 86, 1.0),
   title: const Text("Profile"),
-  actions: <Widget>[
-    IconButton(
-      icon: const Icon(Icons.list),
-      onPressed: () {},
-    )
-  ],
+
 );
