@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:crm_app/chat_bubble.dart';
 import 'package:crm_app/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:crm_app/models/chat_users_model.dart';
@@ -22,7 +21,7 @@ class ChatPage extends StatefulWidget {
 }
 
 class ChatPageState extends State<ChatPage> {
- Future<List<ContactArr>> getChatData() async {
+  Future<List> getChatData() async {
     var urll =
         "https://app.crm-messaging.cloud/index.php/Api/getConversationContact";
     final response = await http.get(Uri.parse(urll), headers: {
@@ -33,20 +32,14 @@ class ChatPageState extends State<ChatPage> {
     var decodedResponse = jsonDecode(response.body);
 
     List contact = decodedResponse['data']['contactArr'];
-    return decodedResponse.map((data)=> ContactArr.fromJson(data)).toList();
-
-
-
-
+    return contact;
   }
 
   @override
   void initState() {
-    futureData=getChatData();
     super.initState();
   }
 
-  Future<List<ContactArr>>? futureData;
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -86,19 +79,69 @@ class ChatPageState extends State<ChatPage> {
             ],
           ),
         ),
-        body: FutureBuilder<List<ContactArr>>(
-          future: futureData,
-          builder: (context, snapshot) {
+        body: FutureBuilder(
+          future: getChatData(),
+          builder: (context, AsyncSnapshot snapshot) {
             if (snapshot.hasData) {
-              List<ContactArr>? contact = snapshot.data;
               return ListView.builder(
-                  itemCount: contact?.length,
+                  itemCount: snapshot.data!.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Container(
-                      height: 75,
+
                       color: Colors.white,
-                      child: Center(
-                        child: Text(contact?[index].contact ?? "error",style: const TextStyle(fontSize: 20),),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 5.0),
+                              child: SizedBox(
+                                height: 80,
+                                child: Material(
+                                  elevation: 5.0,
+                                  child: ListTile(
+                                    onTap: (){
+
+
+
+
+                                    },
+                                    tileColor: Colors.white,
+                                    // shape: RoundedRectangleBorder( side:const BorderSide(color: Colors.black,width: 1.0),borderRadius: BorderRadius.circular(5),  ),
+                                    selectedColor: Colors.grey,
+                                    leading: const Icon(Icons.phone,color: Color.fromARGB(255, 55, 55, 193)),
+                                    minVerticalPadding: 2,
+                                    title: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          snapshot.data[index]['contact'],
+                                          style: const TextStyle(
+
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Text(
+
+                                          snapshot.data[index]['date'],
+                                          maxLines: 2,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w300
+                                          ),
+
+                                        )
+                                      ],
+                                    ),
+                                    subtitle: Text(
+                                      snapshot.data[index]['msg'],
+                                      style: const TextStyle (fontSize: 15,fontWeight: FontWeight.w500),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   });

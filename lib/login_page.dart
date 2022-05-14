@@ -44,11 +44,13 @@ class _LoginPageState extends State<LoginPage> {
     print(response.statusCode);
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);
-      otp = data['otp'];
-      print(data['status']);
-      print(data['otp']);
+      print(response.body);
 
       if (data['status'] == 200) {
+        otp = data['otp'];
+        print(data['status']);
+        print(data['otp']);
+
         setState(() {
           loginMessage = 'OTP sent successfully';
           displayToast();
